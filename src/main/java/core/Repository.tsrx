@@ -6,6 +6,7 @@
         <object type="Window" technology="WPF">
             <name>Генератор отчётностей</name>
             <codeName>Window</codeName>
+            <description>пв</description>
             <identification>
                 <properties>
                     <property name="WindowTitleRegExp" type="string" isRegExp="false">Генератор отчётностей</property>
