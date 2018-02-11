@@ -10,6 +10,5 @@ import stepdefs.CommonSteps;
                     glue = {"stepdefs"},
                  features = {"src/main/java/features"})
 public class CalcTest extends CommonSteps {
-    public CalcTest() throws GeneralLeanFtException{}
-    }
+}
 

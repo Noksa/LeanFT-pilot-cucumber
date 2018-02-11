@@ -3,20 +3,20 @@ package stepdefs;
 import com.hp.lft.report.Reporter;
 import com.hp.lft.report.Status;
 import com.hp.lft.sdk.*;
-import com.hp.lft.sdk.wpf.Window;
 import core.AppRepository;
+import core.interfaces.IExtensions;
 import cucumber.api.java.*;
 import cucumber.api.java.ru.*;
-import ru.sbtqa.tag.pagefactory.annotations.ElementTitle;
 
 import java.net.URI;
 
-public class CommonSteps {
+public class CommonSteps implements IExtensions {
 
-    public CommonSteps() throws GeneralLeanFtException{}
-    AppRepository appRepository = new AppRepository();
+    public AppRepository appRepository = AppRepository.appRepository;
+    private int timing = 60;
+
     @Before
-    public void test() throws Exception{
+    public void test() throws Exception {
         ModifiableSDKConfiguration config = new ModifiableSDKConfiguration();
         config.setServerAddress(new URI("ws://localhost:5095"));
         SDK.init(config);
@@ -24,48 +24,47 @@ public class CommonSteps {
     }
 
     @After
-    public void clean() throws Exception{
+    public void clean() throws Exception {
         Reporter.generateReport();
         SDK.cleanup();
     }
 
 
-
-
-
     @Дано("^Запустить приложение XmlGenerator$")
-    public void открытьПриложениеXmlGenerator() throws Throwable {
+    public void StartApp() throws Throwable {
         Reporter.startTest("Test app XmlGenerator");
-        if (appRepository.MainWindow.exists(0)) appRepository.MainWindow.close();
+        if (WaitUntil(appRepository.MainWindow, w -> w.exists(0))) appRepository.MainWindow.close();
         new ProcessBuilder("C:\\XmlGenerator.exe").start();
         Reporter.setReportTitle("Status Reporting");
     }
 
     @Когда("^открывается приложение XmlGenerator$")
-    public void открываетсяПриложениеXmlGenerator() throws Throwable {
-        if (appRepository.MainWindow.exists(60)) Reporter.reportEvent("App is opened", "", Status.Passed);
+    public void WaitUntilAppIsOpened() throws Throwable {
+        WaitUntil(appRepository.MainWindow, w -> w.exists(timing));
     }
 
     @Тогда("^пользователь закрывает его$")
-    public void пользовательЗакрываетЕго() throws Throwable {
+    public void CloseApp() throws Throwable {
         appRepository.MainWindow.close();
     }
 
     @Тогда("^приложение XmlGenerator закрывается$")
-    public void приложениеXmlGeneratorЗакрывается() throws Throwable {
-        if (notExists(appRepository.MainWindow)) Reporter.reportEvent("App is closed", "", Status.Passed);
+    public void WaitUntilAppIsClosed() throws Throwable {
+        WaitUntil(appRepository.MainWindow, w -> w.exists(timing));
     }
 
 
-    private boolean notExists(Window object) throws Exception {
-        for (int i = 0; i < 10; i++) {
-            if (!object.exists(0))
-            {
-                Reporter.reportEvent( object.getDisplayName() + " not exists.", "", Status.Passed);
-                return true;
-            }
-            Thread.sleep(1000);
-        }
-        return false;
-    }
+//    public <T extends TestObject> boolean WaitUntil(T obj, Predicate<T> predicate) throws GeneralLeanFtException
+//    {
+//        return predicate.test(obj);
+//    }
+//
+//    public <T extends TestObject> boolean WaitUntil(T obj, Predicate<T> predicate, long secs) throws GeneralLeanFtException
+//    {
+//        for (int i = 0; i <= secs; i++) {
+//            if (predicate.test(obj)) return true;
+//        }
+//        return false;
+//    }
+
 }

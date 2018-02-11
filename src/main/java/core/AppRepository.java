@@ -11,14 +11,24 @@ import ru.sbtqa.tag.pagefactory.annotations.PageEntry;
 @PageEntry(title = "XmlGenerator")
 public class AppRepository {
 
-   public  AppRepository() throws GeneralLeanFtException{}
+    public static AppRepository appRepository;
+
+    static {
+        try {
+            appRepository = new AppRepository();
+        } catch (GeneralLeanFtException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private AppRepository() throws GeneralLeanFtException {
+    }
 
 
     @ElementTitle("Главное окно")
     public Window MainWindow = getMainWindow();
 
-    private Window getMainWindow() throws GeneralLeanFtException
-    {
+    private Window getMainWindow() throws GeneralLeanFtException {
         if (MainWindow == null) {
             MainWindow = Desktop.describe(Window.class, new WindowDescription.Builder()
                     .objectName("Генератор отчётностей")
