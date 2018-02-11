@@ -1,7 +1,6 @@
 package core.interfaces;
 
-import com.hp.lft.sdk.GeneralLeanFtException;
-import com.hp.lft.sdk.TestObject;
+import com.hp.lft.sdk.*;
 
 public interface IExtensions {
 
@@ -20,7 +19,7 @@ public interface IExtensions {
         return false;
     }
 
-    interface ITestObj<T extends TestObject> {
+    interface ITestObj<T> {
         boolean test(T obj) throws GeneralLeanFtException;
     }
 }

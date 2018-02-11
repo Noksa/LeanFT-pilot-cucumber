@@ -1,8 +1,9 @@
 package stepdefs;
 
+import com.hp.lft.report.ReportException;
 import com.hp.lft.report.Reporter;
-import com.hp.lft.report.Status;
 import com.hp.lft.sdk.*;
+import com.hp.lft.verifications.Verify;
 import core.AppRepository;
 import core.interfaces.IExtensions;
 import cucumber.api.java.*;
@@ -12,7 +13,7 @@ import java.net.URI;
 
 public class CommonSteps implements IExtensions {
 
-    public AppRepository appRepository = AppRepository.appRepository;
+    protected AppRepository appRepository = AppRepository.appRepository;
     private int timing = 60;
 
     @Before
@@ -24,7 +25,7 @@ public class CommonSteps implements IExtensions {
     }
 
     @After
-    public void clean() throws Exception {
+    public void clean() throws ReportException {
         Reporter.generateReport();
         SDK.cleanup();
     }
@@ -33,38 +34,21 @@ public class CommonSteps implements IExtensions {
     @Дано("^Запустить приложение XmlGenerator$")
     public void StartApp() throws Throwable {
         Reporter.startTest("Test app XmlGenerator");
-        if (WaitUntil(appRepository.MainWindow, w -> w.exists(0))) appRepository.MainWindow.close();
+        if (appRepository.MainWindow.exists(0)) appRepository.MainWindow.close();
         new ProcessBuilder("C:\\XmlGenerator.exe").start();
         Reporter.setReportTitle("Status Reporting");
     }
 
     @Когда("^открывается приложение XmlGenerator$")
     public void WaitUntilAppIsOpened() throws Throwable {
-        WaitUntil(appRepository.MainWindow, w -> w.exists(timing));
+        boolean result;
+        result = WaitUntil(appRepository.MainWindow, w -> w.exists(timing));
+        Verify.isTrue(result, "Приложение XmlGenerator открыто.");
     }
 
     @Тогда("^пользователь закрывает его$")
     public void CloseApp() throws Throwable {
         appRepository.MainWindow.close();
+        Verify.isTrue(WaitUntil(appRepository.MainWindow, w -> !w.exists(0), timing), "Приложение XmlGenerator закрыто.");
     }
-
-    @Тогда("^приложение XmlGenerator закрывается$")
-    public void WaitUntilAppIsClosed() throws Throwable {
-        WaitUntil(appRepository.MainWindow, w -> w.exists(timing));
-    }
-
-
-//    public <T extends TestObject> boolean WaitUntil(T obj, Predicate<T> predicate) throws GeneralLeanFtException
-//    {
-//        return predicate.test(obj);
-//    }
-//
-//    public <T extends TestObject> boolean WaitUntil(T obj, Predicate<T> predicate, long secs) throws GeneralLeanFtException
-//    {
-//        for (int i = 0; i <= secs; i++) {
-//            if (predicate.test(obj)) return true;
-//        }
-//        return false;
-//    }
-
 }
